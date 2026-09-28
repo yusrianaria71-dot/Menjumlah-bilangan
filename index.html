@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Petualangan Berhitung Ceria (1-10) - Kelas 1 SD</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Quicksand untuk anak-anak -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Fredoka', 'Quicksand', cursive, sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+
+    .animate-bounce-slow {
+      animation: bounce-slow 2.5s infinite ease-in-out;
+    }
+
+    .animate-wiggle {
+      animation: wiggle 1.2s infinite ease-in-out;
+    }
+
+    .bubble-shadow {
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+    }
+    
+    .bubble-shadow:active {
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+      transform: translateY(6px);
+    }
+
+    /* Modal scroll styling */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-sky-300 via-amber-100 to-emerald-200 min-h-screen text-slate-800 flex flex-col justify-between p-2 sm:p-4">
+
+  <header class="w-full max-w-4xl mx-auto flex items-center justify-between py-2 px-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-md border-2 border-white mb-3">
+    <div class="flex items-center space-x-2">
+      <span class="text-3xl animate-bounce-slow">🎒</span>
+      <div>
+        <h1 class="text-lg sm:text-xl font-bold text-indigo-600 leading-tight">Matematika Ceria</h1>
+        <p class="text-xs text-slate-500 font-sans hidden sm:block">Penjumlahan 1 - 10 | Fase A Kelas 1 SD</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <!-- Tombol Audio Mute/Unmute -->
+      <button id="btnAudioToggle" onclick="toggleAudio()" class="p-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-xl transition flex items-center justify-center font-bold text-sm shadow-sm" title="Nyalakan/Matikan Suara">
+        <span id="audioIcon">🔊</span>
+      </button>
+
+      <!-- Tombol Dokumentasi & Salin Prompt Guru -->
+      <button onclick="openPromptModal()" class="px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md hover:brightness-105 active:scale-95 transition flex items-center space-x-1">
+        <span>📜</span>
+        <span>Lihat Prompt Master</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-4xl mx-auto flex-1 flex flex-col items-center justify-center relative">
+
+    <!-- ================= VIEW 1: MENU UTAMA ================= -->
+    <div id="viewMenu" class="w-full max-w-lg bg-white/95 rounded-3xl p-6 sm:p-8 shadow-xl border-4 border-yellow-300 text-center transition-all duration-300 transform scale-100">
+      <div class="relative inline-block mb-3">
+        <span class="text-6xl sm:text-7xl block animate-wiggle">🍎🦁⭐</span>
+        <span class="absolute -top-2 -right-4 bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full font-bold uppercase shadow">Mudah & Seru</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-sky-700 mb-1">Ayo Bermain & Berhitung!</h2>
+      <p class="text-slate-600 text-sm sm:text-base mb-6 font-sans">Belajar penjumlahan bilangan 1 sampai 10 dengan gambar lucu dan suara ceria.</p>
+
+      <!-- Input Nama Siswa -->
+      <div class="mb-5 text-left">
+        <label for="studentName" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1 ml-1">Nama Siswa Hebat:</label>
+        <div class="relative">
+          <input type="text" id="studentName" placeholder="Tulis namamu di sini... (contoh: Budi)" 
+            class="w-full px-4 py-3 bg-slate-50 border-2 border-sky-300 rounded-2xl text-slate-800 font-bold focus:outline-none focus:border-indigo-500 text-base shadow-inner">
+          <span class="absolute right-3 top-3 text-xl">✏️</span>
+        </div>
+      </div>
+
+      <!-- Menu Pilihan -->
+      <div class="space-y-3">
+        <button onclick="startBelajar()" class="w-full py-4 px-6 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white text-lg font-bold rounded-2xl bubble-shadow transition flex items-center justify-center space-x-3">
+          <span class="text-2xl">🌱</span>
+          <span>1. Belajar Konsep (Benda & Buah)</span>
+        </button>
+
+        <button onclick="startKuis()" class="w-full py-4 px-6 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white text-lg font-bold rounded-2xl bubble-shadow transition flex items-center justify-center space-x-3">
+          <span class="text-2xl">🎯</span>
+          <span>2. Kuis Berhitung Bintang (10 Soal)</span>
+        </button>
+
+        <button onclick="openSheetsModal()" class="w-full py-3 px-6 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-2 border-indigo-200 text-sm font-bold rounded-2xl transition flex items-center justify-center space-x-2">
+          <span>📊</span>
+          <span>Hubungkan Nilai ke Google Sheets</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= VIEW 2: MODE BELAJAR (VISUAL BUAH) ================= -->
+    <div id="viewBelajar" class="w-full max-w-xl bg-white/95 rounded-3xl p-5 sm:p-7 shadow-xl border-4 border-emerald-300 hidden transition-all duration-300">
+      <!-- Tombol Kembali ke Menu Awal -->
+      <div class="flex items-center justify-between mb-4 border-b pb-3">
+        <button onclick="goToMenu()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition flex items-center space-x-1 border border-slate-300 shadow-sm">
+          <span>🏠</span>
+          <span>Kembali ke Menu Awal</span>
+        </button>
+        <span class="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Mode Eksplorasi Visual</span>
+      </div>
+
+      <div class="text-center mb-4">
+        <h3 class="text-xl font-bold text-slate-800">Sentuh Bintang untuk Berhitung!</h3>
+        <p class="text-xs text-slate-500 font-sans">Ubah angka di bawah untuk melihat kumpulan benda bertambah:</p>
+      </div>
+
+      <!-- Interaktif Penjumlahan Buah -->
+      <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-dashed border-amber-300 mb-5">
+        <div class="flex items-center justify-around text-center mb-3">
+          <!-- Kotak Kiri -->
+          <div class="flex flex-col items-center">
+            <span id="learnCountA" class="text-3xl font-extrabold text-indigo-600">2</span>
+            <div class="flex space-x-1 mt-1">
+              <button onclick="adjustLearn('a', -1)" class="w-8 h-8 rounded-lg bg-rose-200 text-rose-800 font-bold hover:bg-rose-300 active:scale-95 text-lg">-</button>
+              <button onclick="adjustLearn('a', 1)" class="w-8 h-8 rounded-lg bg-emerald-200 text-emerald-800 font-bold hover:bg-emerald-300 active:scale-95 text-lg">+</button>
+            </div>
+          </div>
+
+          <span class="text-3xl font-black text-slate-400">+</span>
+
+          <!-- Kotak Kanan -->
+          <div class="flex flex-col items-center">
+            <span id="learnCountB" class="text-3xl font-extrabold text-indigo-600">3</span>
+            <div class="flex space-x-1 mt-1">
+              <button onclick="adjustLearn('b', -1)" class="w-8 h-8 rounded-lg bg-rose-200 text-rose-800 font-bold hover:bg-rose-300 active:scale-95 text-lg">-</button>
+              <button onclick="adjustLearn('b', 1)" class="w-8 h-8 rounded-lg bg-emerald-200 text-emerald-800 font-bold hover:bg-emerald-300 active:scale-95 text-lg">+</button>
+            </div>
+          </div>
+
+          <span class="text-3xl font-black text-slate-400">=</span>
+
+          <!-- Hasil Total -->
+          <div class="flex flex-col items-center">
+            <span id="learnTotal" class="text-4xl font-black text-emerald-600 animate-bounce-slow">5</span>
+            <span class="text-xs font-bold text-emerald-700 uppercase">Jumlah</span>
+          </div>
+        </div>
+
+        <!-- Wadah Gambar Representasi Benda Konkret -->
+        <div class="bg-white p-3 rounded-xl border border-amber-200 min-h-[110px] flex flex-wrap items-center justify-center gap-2" id="visualContainer">
+          <!-- Diisi otomatis oleh JavaScript -->
+        </div>
+      </div>
+
+      <div class="bg-blue-50 p-3 rounded-xl text-center text-blue-900 text-xs sm:text-sm font-sans mb-4">
+        💡 <strong>Catatan Guru:</strong> Bimbing anak menyentuh setiap benda di layar sambil mengucapkan urutan bilangan 1, 2, 3...
+      </div>
+
+      <button onclick="startKuis()" class="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold rounded-xl text-base shadow hover:brightness-105 active:scale-95 transition">
+        Sudah Paham? Ayo Coba Kuis! 🚀
+      </button>
+    </div>
+
+    <!-- ================= VIEW 3: MODE KUIS 10 SOAL ================= -->
+    <div id="viewKuis" class="w-full max-w-xl bg-white/95 rounded-3xl p-5 sm:p-7 shadow-xl border-4 border-amber-300 hidden transition-all duration-300">
+      
+      <!-- Bar Navigasi & Progres Kuis -->
+      <div class="flex items-center justify-between mb-3">
+        <button onclick="confirmExitToMenu()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs sm:text-sm transition flex items-center space-x-1 border border-slate-300">
+          <span>🏠</span>
+          <span>Kembali</span>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
+            Soal <span id="quizIndex">1</span>/10
+          </span>
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full flex items-center space-x-1">
+            <span>⭐</span>
+            <span id="quizScore">0</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Progress Bar Garis -->
+      <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-4">
+        <div id="quizProgressBar" class="bg-gradient-to-r from-amber-400 to-emerald-500 h-full w-[10%] transition-all duration-300"></div>
+      </div>
+
+      <!-- Area Pertanyaan & Benda Bantu -->
+      <div class="text-center py-2">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Berapakah jumlahnya?</div>
+        
+        <!-- Formula Angka Besar -->
+        <div class="flex items-center justify-center space-x-3 text-4xl sm:text-5xl font-black text-indigo-700 mb-3">
+          <span id="numA" class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl px-4 py-2">3</span>
+          <span class="text-slate-400">+</span>
+          <span id="numB" class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl px-4 py-2">2</span>
+          <span class="text-slate-400">=</span>
+          <span class="text-amber-500 animate-pulse">?</span>
+        </div>
+
+        <!-- Benda Visual untuk Menghitung -->
+        <div id="quizVisualHelp" class="bg-sky-50 border-2 border-dashed border-sky-200 p-3 rounded-2xl min-h-[90px] flex items-center justify-center flex-wrap gap-2 mb-4">
+          <!-- Benda visual dirender dinamis -->
+        </div>
+      </div>
+
+      <!-- Feedback Area Instan -->
+      <div id="feedbackBox" class="h-10 flex items-center justify-center mb-3">
+        <span id="feedbackText" class="text-sm font-bold hidden px-4 py-1.5 rounded-full shadow-sm"></span>
+      </div>
+
+      <!-- 4 Pilihan Jawaban Tombol Sentuh Besar -->
+      <div class="grid grid-cols-2 gap-3 mb-2" id="answerButtonsContainer">
+        <!-- 4 Tombol Dihasilkan Dinamis -->
+      </div>
+    </div>
+
+    <!-- ================= VIEW 4: HASIL KUIS / RAPOR CERIA ================= -->
+    <div id="viewResult" class="w-full max-w-lg bg-white/95 rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-purple-400 hidden text-center transition-all duration-300">
+      
+      <div class="text-6xl mb-2 animate-bounce" id="resultEmoji">🏆</div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-1" id="resultTitle">Hebat Sekali!</h2>
+      <p class="text-slate-600 text-sm font-sans mb-4" id="resultSubtitle">Kamu telah menyelesaikan tantangan penjumlahan!</p>
+
+      <!-- Kartu Skor -->
+      <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 rounded-2xl border-2 border-indigo-200 mb-5 text-center">
+        <p class="text-xs uppercase font-bold text-slate-500 mb-1">Skor Kamu</p>
+        <div class="text-5xl font-black text-indigo-600 mb-2">
+          <span id="finalScoreVal">100</span><span class="text-2xl text-slate-400">/100</span>
+        </div>
+        <p class="text-sm font-bold text-purple-700" id="finalDetailText">Benar 10 dari 10 soal</p>
+      </div>
+
+      <!-- Pengiriman Data ke Google Spreadsheet/Google Form -->
+      <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 mb-5 text-left">
+        <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wide flex items-center space-x-1 mb-2">
+          <span>📋</span>
+          <span>Rekap Nilai Siswa ke Google Sheets</span>
+        </h4>
+        <p class="text-xs text-slate-600 font-sans mb-3">Nilai dapat dicatat otomatis ke lembar kerja guru (Google Spreadsheet) atau Form.</p>
+        
+        <button id="btnSubmitScore" onclick="sendScoreToGoogle()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-sm transition flex items-center justify-center space-x-2 shadow">
+          <span>📤</span>
+          <span id="submitScoreBtnText">Kirim Nilai Sekarang</span>
+        </button>
+        <p id="submissionStatus" class="text-xs text-center font-bold text-emerald-700 mt-2 hidden"></p>
+      </div>
+
+      <!-- Tombol Aksi Akhir -->
+      <div class="space-y-2">
+        <button onclick="startKuis()" class="w-full py-3.5 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold rounded-xl text-base bubble-shadow transition">
+          🔄 Main Lagi & Tingkatkan Skor
+        </button>
+
+        <button onclick="goToMenu()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition border border-slate-300">
+          🏠 Kembali ke Menu Utama
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: MASTER PROMPT GURU ================= -->
+  <div id="modalPrompt" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border-4 border-indigo-400 transform scale-95 transition-transform duration-200" id="modalPromptCard">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">📋</span>
+          <div>
+            <h3 class="font-bold text-base sm:text-lg">Master Prompt Standar Industri</h3>
+            <p class="text-xs text-indigo-100 font-sans">Persona • Tugas • Format • Konteks (Untuk Guru SD)</p>
+          </div>
+        </div>
+        <button onclick="closePromptModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-bold transition">✕</button>
+      </div>
+
+      <!-- Modal Content Body -->
+      <div class="p-5 overflow-y-auto custom-scroll space-y-4 text-sm font-sans text-slate-700 leading-relaxed">
+        <p class="text-xs bg-indigo-50 border-l-4 border-indigo-600 p-3 rounded-r-lg text-indigo-900">
+          💡 <strong>Petunjuk untuk Guru:</strong> Gunakan prompt terstruktur di bawah ini saat meminta AI (seperti Gemini, Claude, atau ChatGPT) membuat modul, game, atau lembar interaktif baru. Anda bisa menyalin teks di bawah dengan tombol biru di kanan bawah!
+        </p>
+
+        <!-- Prompt Text Container -->
+        <div class="bg-slate-900 text-emerald-300 p-4 rounded-2xl font-mono text-xs overflow-x-auto whitespace-pre-wrap select-all leading-normal border border-slate-700" id="masterPromptText">### MASTER PROMPT: MEDIA PEMBELAJARAN INTERAKTIF MATEMATIKA FASE A (KELAS 1 SD)
+
+1. PERSONA:
+Bertindaklah sebagai Senior Educational Game Developer & Spesialis Kurikulum Merdeka Fase A (Kelas 1 Sekolah Dasar) dengan keahlian khusus dalam pedagogical UI/UX design, visual storytelling interaktif, dan gamifikasi matematika ramah anak (early childhood numeracy).
+
+2. TUGAS (TASK):
+Rancang dan buatkan satu aplikasi web media pembelajaran interaktif mandiri (Single-File HTML5, CSS Tailwind, dan Vanilla JavaScript) untuk materi "Penjumlahan Bilangan Cacah 1 sampai 10" yang:
+- Memandu anak dari pemahaman konkret (menghitung kumpulan gambar benda/buah) ke simbolik numerik (2 + 3 = 5).
+- Memiliki 2 mode: Mode Belajar Visual Interaktif dan Mode Kuis Berhitung Berhadiah Bintang (10 soal adaptif).
+- Menyediakan efek audio sintetis instan (Web Audio API) yang ramah anak tanpa bergantung pada file mp3 luar.
+- Memberikan efek visual selebrasi (confetti, bintang berkilau, goyangan gemas).
+- Dilengkapi tombol "Kembali ke Menu Awal" yang selalu dapat diakses di setiap halaman.
+- Terintegrasi fitur input nama dan pengiriman/penautan rekap skor otomatis ke Google Sheets / Google Form melalui Google Apps Script Webhook.
+
+3. KONTEKS (CONTEXT):
+- Sasaran Pengguna: Siswa usia 6-7 tahun (Kelas 1 SD) yang sedang dalam masa transisi praoperasional ke operasional konkret menurut teori Piaget.
+- Kebutuhan Belajar: Anak membutuhkan umpan balik audio-visual instan. Anak belum lancar membaca teks panjang, sehingga tombol harus besar (touch-friendly), font bergaya ramah anak (Fredoka/Quicksand), dan warna cerah (pastel ceria).
+- Perangkat: Harus 100% responsif digunakan di smartphone Android/iPhone (orientasi tegak/portrait) maupun layar laptop/komputer proyektor kelas tanpa scroll horizontal.
+- Rekapitulasi Guru: Guru memerlukan bukti asesmen formatif yang dapat diekspor langsung ke spreadsheet agar penilaian tersimpan rapi.
+
+4. FORMAT & SPESIFIKASI TEKNIS (FORMAT):
+- File Output: 1 Berkas HTML utuh (Single-File Mandiri) memuat seluruh HTML, Tailwind CSS melalui CDN, dan Script JS.
+- Audio: Diprogram langsung dengan synthesizer Web Audio API internal (nada instan chime C5-G5, nada salah boing, fanfare ceria) sehingga anti-error dan bebas kuota tambahan.
+- Visual: Emoji berkualitas tinggi sebagai objek hitung (🍎, 🍌, 🍓, 🦁, 🐰, 🚗, ⭐), CSS animations, dan Canvas Confetti.
+- Navigasi: Status State Machine yang bersih (Menu Utama -> Belajar -> Kuis -> Hasil Akhir), aman dari refresh yang merusak skor.
+- Integrasi Google Docs/Sheets: Formulir penampung URL Webhook Apps Script atau tautan Google Form Prefilled URL untuk sinkronisasi nilai otomatis.</div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 bg-slate-100 border-t flex items-center justify-between">
+        <span id="copyToast" class="text-xs font-bold text-emerald-600 hidden">✓ Prompt berhasil disalin!</span>
+        <div class="flex space-x-2 ml-auto">
+          <button onclick="copyMasterPrompt()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow transition flex items-center space-x-1">
+            <span>📋</span>
+            <span>Salin Prompt Ini</span>
+          </button>
+          <button onclick="closePromptModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs sm:text-sm transition">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: PENGATURAN GOOGLE SHEETS ================= -->
+  <div id="modalSheets" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border-4 border-emerald-400 transform scale-95 transition-transform duration-200" id="modalSheetsCard">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">📊</span>
+          <h3 class="font-bold text-base sm:text-lg">Pengaturan Google Sheets Guru</h3>
+        </div>
+        <button onclick="closeSheetsModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-bold transition">✕</button>
+      </div>
+
+      <!-- Modal Content Body -->
+      <div class="p-5 overflow-y-auto custom-scroll space-y-4 text-xs sm:text-sm font-sans text-slate-700 leading-relaxed">
+        <p class="text-slate-600">
+          Anda dapat menghubungkan game ini ke <strong>Google Spreadsheet</strong> sekolah agar setiap siswa selesai kuis, nilainya langsung masuk otomatis ke lembar rekap Anda!
+        </p>
+
+        <div class="space-y-2">
+          <label class="block font-bold text-slate-700">URL Google Apps Script Web App / Webhook:</label>
+          <input type="url" id="sheetWebhookInput" placeholder="https://script.google.com/macros/s/.../exec" 
+            class="w-full px-3 py-2 border-2 border-emerald-300 rounded-xl font-mono text-xs focus:outline-none focus:border-emerald-600">
+          <p class="text-[11px] text-slate-500">
+            *Biarkan kosong untuk mencoba mode demonstrasi simulasi otomatis.
+          </p>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <h5 class="font-bold text-emerald-800 text-xs uppercase">Cara Pasang Cepat di Google Sheets:</h5>
+          <ol class="list-decimal list-inside space-y-1 text-slate-600 text-xs">
+            <li>Buka <em>Google Sheets</em> baru, beri judul kolom: <code>Timestamp</code>, <code>Nama Siswa</code>, <code>Skor</code>, <code>Detail</code>.</li>
+            <li>Klik menu <strong>Extensions > Apps Script</strong>.</li>
+            <li>Tempel kode fungsi <code>doPost(e)</code> sederhana untuk menerima parameter JSON lalu deploy sebagai Web App (Who has access: <em>Anyone</em>).</li>
+            <li>Salin tautan Web App tersebut dan tempel ke kolom di atas.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 bg-slate-100 border-t flex justify-end space-x-2">
+        <button onclick="saveSheetSettings()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm transition">
+          Simpan Pengaturan
+        </button>
+        <button onclick="closeSheetsModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs sm:text-sm transition">
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dialog Konfirmasi Keluar Kuis Ramah Anak -->
+  <div id="dialogConfirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-4 border-amber-300">
+      <div class="text-5xl mb-2">🤔</div>
+      <h3 class="text-xl font-extrabold text-slate-800 mb-1">Mau Kembali ke Menu?</h3>
+      <p class="text-slate-600 text-xs sm:text-sm font-sans mb-4">Nilai kuis yang sedang berjalan akan diulang dari awal ya.</p>
+      <div class="flex space-x-2">
+        <button onclick="closeDialogConfirm()" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl text-sm hover:bg-slate-200">Lanjut Main</button>
+        <button onclick="executeExitToMenu()" class="flex-1 py-2.5 bg-rose-500 text-white font-bold rounded-xl text-sm hover:bg-rose-600 shadow">Ya, Keluar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="w-full text-center py-2 text-[11px] text-slate-600 font-sans">
+    Media Interaktif Matematika Kelas 1 SD • Penjumlahan 1–10 • Kurikulum Merdeka
+  </footer>
+
+  <script>
+    /* ========================================================
+       1. SYNTHESIZER AUDIO ENGINE (Bebas Kuota & Anti Gagal)
+       ======================================================== */
+    let audioContext = null;
+    let isSoundEnabled = true;
+
+    function getAudioContext() {
+      if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContextClass();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      return audioContext;
+    }
+
+    // Nada Tombol Ringan (Pop)
+    function playClickSound() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+      } catch (e) {
+        console.error("Audio error", e);
+      }
+    }
+
+    // Nada Jawaban Benar (Melodi Ceria C5 -> G5)
+    function playCorrectSound() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const startTime = ctx.currentTime + (idx * 0.08);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.25, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.25);
+        });
+      } catch (e) {}
+    }
+
+    // Nada Salah Lembut (Boing Ramah Anak)
+    function playWrongSound() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(250, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(130, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    // Nada Kemenangan Fanfare
+    function playFanfareSound() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const chord = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+        chord.forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const t = ctx.currentTime + (index * 0.12);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.7);
+        });
+      } catch (e) {}
+    }
+
+    function toggleAudio() {
+      isSoundEnabled = !isSoundEnabled;
+      const icon = document.getElementById('audioIcon');
+      icon.textContent = isSoundEnabled ? '🔊' : '🔇';
+      if (isSoundEnabled) playClickSound();
+    }
+
+    /* ========================================================
+       2. DATA DAN OBJEK VISUAL UNTUK SISWA SD
+       ======================================================== */
+    const FRUITS_AND_ANIMALS = [
+      { emoji: '🍎', name: 'Apel Merah' },
+      { emoji: '⭐', name: 'Bintang Terang' },
+      { emoji: '🍌', name: 'Pisang Manis' },
+      { emoji: '🦁', name: 'Singa Lucu' },
+      { emoji: '🐰', name: 'Kelinci Gemas' },
+      { emoji: '🍓', name: 'Stroberi Segar' },
+      { emoji: '🚗', name: 'Mobil Kecil' },
+      { emoji: '🍭', name: 'Permen Warna' }
+    ];
+
+    let currentStudentName = 'Siswa Hebat';
+    let googleSheetWebhookUrl = '';
+
+    // State Belajar
+    let learnA = 2;
+    let learnB = 3;
+
+    // State Kuis
+    let currentQuizIndex = 0;
+    let currentQuizScore = 0;
+    let quizQuestionList = [];
+    let isAnsweringBlocked = false;
+
+    /* ========================================================
+       3. SISTEM NAVIGASI & KONTROL LAYAR
+       ======================================================== */
+    const viewMenu = document.getElementById('viewMenu');
+    const viewBelajar = document.getElementById('viewBelajar');
+    const viewKuis = document.getElementById('viewKuis');
+    const viewResult = document.getElementById('viewResult');
+
+    function hideAllViews() {
+      viewMenu.classList.add('hidden');
+      viewBelajar.classList.add('hidden');
+      viewKuis.classList.add('hidden');
+      viewResult.classList.add('hidden');
+    }
+
+    function goToMenu() {
+      playClickSound();
+      hideAllViews();
+      viewMenu.classList.remove('hidden');
+    }
+
+    function confirmExitToMenu() {
+      playClickSound();
+      document.getElementById('dialogConfirm').classList.remove('hidden');
+    }
+
+    function closeDialogConfirm() {
+      playClickSound();
+      document.getElementById('dialogConfirm').classList.add('hidden');
+    }
+
+    function executeExitToMenu() {
+      closeDialogConfirm();
+      goToMenu();
+    }
+
+    /* ========================================================
+       4. MODE BELAJAR INTERAKTIF (Eksplorasi Konkret)
+       ======================================================== */
+    function startBelajar() {
+      playClickSound();
+      updateStudentName();
+      hideAllViews();
+      viewBelajar.classList.remove('hidden');
+      renderLearnView();
+    }
+
+    function adjustLearn(variable, change) {
+      playClickSound();
+      if (variable === 'a') {
+        learnA = Math.max(1, Math.min(9, learnA + change));
+        // Pastikan total tidak melebihi 10 untuk materi kelas 1
+        if (learnA + learnB > 10) learnB = 10 - learnA;
+      } else {
+        learnB = Math.max(1, Math.min(9, learnB + change));
+        if (learnA + learnB > 10) learnA = 10 - learnB;
+      }
+      renderLearnView();
+    }
+
+    function renderLearnView() {
+      document.getElementById('learnCountA').textContent = learnA;
+      document.getElementById('learnCountB').textContent = learnB;
+      const total = learnA + learnB;
+      document.getElementById('learnTotal').textContent = total;
+
+      const container = document.getElementById('visualContainer');
+      container.innerHTML = '';
+
+      // Tampilkan kelompok benda A
+      const groupA = document.createElement('div');
+      groupA.className = 'flex flex-wrap gap-1 bg-indigo-50 p-2 rounded-xl border border-indigo-200 items-center justify-center';
+      for (let i = 0; i < learnA; i++) {
+        const item = document.createElement('span');
+        item.className = 'text-3xl cursor-pointer hover:scale-125 transition transform';
+        item.textContent = '🍎';
+        item.title = `Apel ke-${i + 1}`;
+        item.onclick = () => playClickSound();
+        groupA.appendChild(item);
+      }
+      container.appendChild(groupA);
+
+      // Tanda Plus
+      const plusSign = document.createElement('span');
+      plusSign.className = 'text-2xl font-bold text-amber-500 self-center';
+      plusSign.textContent = '+';
+      container.appendChild(plusSign);
+
+      // Tampilkan kelompok benda B
+      const groupB = document.createElement('div');
+      groupB.className = 'flex flex-wrap gap-1 bg-amber-50 p-2 rounded-xl border border-amber-200 items-center justify-center';
+      for (let i = 0; i < learnB; i++) {
+        const item = document.createElement('span');
+        item.className = 'text-3xl cursor-pointer hover:scale-125 transition transform';
+        item.textContent = '⭐';
+        item.title = `Bintang ke-${i + 1}`;
+        item.onclick = () => playClickSound();
+        groupB.appendChild(item);
+      }
+      container.appendChild(groupB);
+    }
+
+    /* ========================================================
+       5. SISTEM KUIS 10 SOAL PENJUMLAHAN 1-10
+       ======================================================== */
+    function updateStudentName() {
+      const input = document.getElementById('studentName').value.trim();
+      currentStudentName = input !== '' ? input : 'Siswa Hebat';
+    }
+
+    function generateQuizQuestions() {
+      const questions = [];
+      const usedPairs = new Set();
+
+      while (questions.length < 10) {
+        // Jumlah total maksimal 10, minimal 2
+        const total = Math.floor(Math.random() * 9) + 2; // 2..10
+        const a = Math.floor(Math.random() * (total - 1)) + 1; // 1..(total-1)
+        const b = total - a;
+        const key = `${a}+${b}`;
+
+        if (!usedPairs.has(key)) {
+          usedPairs.add(key);
+          const randomTheme = FRUITS_AND_ANIMALS[Math.floor(Math.random() * FRUITS_AND_ANIMALS.length)];
+          questions.push({
+            a: a,
+            b: b,
+            answer: total,
+            emoji: randomTheme.emoji,
+            name: randomTheme.name
+          });
+        }
+      }
+      return questions;
+    }
+
+    function startKuis() {
+      playClickSound();
+      updateStudentName();
+      quizQuestionList = generateQuizQuestions();
+      currentQuizIndex = 0;
+      currentQuizScore = 0;
+      isAnsweringBlocked = false;
+
+      hideAllViews();
+      viewKuis.classList.remove('hidden');
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      isAnsweringBlocked = false;
+      const q = quizQuestionList[currentQuizIndex];
+
+      // Update Header Info
+      document.getElementById('quizIndex').textContent = currentQuizIndex + 1;
+      document.getElementById('quizScore').textContent = currentQuizScore;
+      const progressPercent = ((currentQuizIndex + 1) / 10) * 100;
+      document.getElementById('quizProgressBar').style.width = `${progressPercent}%`;
+
+      // Angka Soal
+      document.getElementById('numA').textContent = q.a;
+      document.getElementById('numB').textContent = q.b;
+
+      // Render Visual Benda Bantu Hitung
+      const visualBox = document.getElementById('quizVisualHelp');
+      visualBox.innerHTML = '';
+      
+      const leftCluster = document.createElement('div');
+      leftCluster.className = 'flex flex-wrap gap-1 p-1 bg-white/80 rounded-xl shadow-sm';
+      for (let i = 0; i < q.a; i++) {
+        const span = document.createElement('span');
+        span.className = 'text-2xl sm:text-3xl animate-bounce-slow';
+        span.textContent = q.emoji;
+        leftCluster.appendChild(span);
+      }
+      visualBox.appendChild(leftCluster);
+
+      const plusMarker = document.createElement('span');
+      plusMarker.className = 'text-xl font-black text-slate-400 mx-1';
+      plusMarker.textContent = '+';
+      visualBox.appendChild(plusMarker);
+
+      const rightCluster = document.createElement('div');
+      rightCluster.className = 'flex flex-wrap gap-1 p-1 bg-white/80 rounded-xl shadow-sm';
+      for (let i = 0; i < q.b; i++) {
+        const span = document.createElement('span');
+        span.className = 'text-2xl sm:text-3xl animate-bounce-slow';
+        span.textContent = q.emoji;
+        rightCluster.appendChild(span);
+      }
+      visualBox.appendChild(rightCluster);
+
+      // Bersihkan Feedback Box
+      const fb = document.getElementById('feedbackText');
+      fb.className = 'text-sm font-bold hidden px-4 py-1.5 rounded-full shadow-sm';
+      fb.textContent = '';
+
+      // Siapkan 4 Pilihan Jawaban (1 Benar, 3 Distraktor Masuk Akal 1-10)
+      const options = [q.answer];
+      while (options.length < 4) {
+        const delta = Math.floor(Math.random() * 5) - 2; // -2, -1, 1, 2
+        let fake = q.answer + (delta === 0 ? 1 : delta);
+        if (fake < 1) fake = 1;
+        if (fake > 10) fake = 10;
+        if (!options.includes(fake)) {
+          options.push(fake);
+        }
+      }
+      // Acak urutan
+      options.sort(() => Math.random() - 0.5);
+
+      // Render Tombol Jawaban
+      const btnContainer = document.getElementById('answerButtonsContainer');
+      btnContainer.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'py-4 bg-gradient-to-b from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-black text-2xl sm:text-3xl rounded-2xl bubble-shadow transition transform active:scale-95 flex items-center justify-center';
+        btn.textContent = opt;
+        btn.onclick = () => handleAnswerSelect(opt, btn);
+        btnContainer.appendChild(btn);
+      });
+    }
+
+    function handleAnswerSelect(selectedAnswer, buttonElement) {
+      if (isAnsweringBlocked) return;
+      isAnsweringBlocked = true;
+
+      const q = quizQuestionList[currentQuizIndex];
+      const feedbackBox = document.getElementById('feedbackText');
+      feedbackBox.classList.remove('hidden');
+
+      if (selectedAnswer === q.answer) {
+        // JAWABAN BENAR
+        playCorrectSound();
+        currentQuizScore += 10;
+        document.getElementById('quizScore').textContent = currentQuizScore;
+
+        buttonElement.classList.remove('from-sky-400', 'to-indigo-500');
+        buttonElement.classList.add('from-emerald-400', 'to-green-600', 'scale-105');
+
+        feedbackBox.textContent = '🌟 HEBAT! Jawabanmu Benar!';
+        feedbackBox.classList.add('bg-emerald-100', 'text-emerald-800', 'border', 'border-emerald-300');
+
+        // Letupan konfeti mini
+        confetti({
+          particleCount: 25,
+          spread: 50,
+          origin: { y: 0.6 }
+        });
+
+      } else {
+        // JAWABAN SALAH
+        playWrongSound();
+        buttonElement.classList.remove('from-sky-400', 'to-indigo-500');
+        buttonElement.classList.add('from-rose-400', 'to-red-600');
+
+        feedbackBox.textContent = `💪 Ayo Coba Lagi! ${q.a} + ${q.b} adalah ${q.answer}`;
+        feedbackBox.classList.add('bg-rose-100', 'text-rose-800', 'border', 'border-rose-300');
+      }
+
+      // Tunggu 1.2 detik lalu lanjut ke pertanyaan berikutnya
+      setTimeout(() => {
+        currentQuizIndex++;
+        if (currentQuizIndex < 10) {
+          renderQuizQuestion();
+        } else {
+          showFinalResult();
+        }
+      }, 1200);
+    }
+
+    /* ========================================================
+       6. HALAMAN HASIL AKHIR & SELEBRASI
+       ======================================================== */
+    function showFinalResult() {
+      playFanfareSound();
+      hideAllViews();
+      viewResult.classList.remove('hidden');
+
+      document.getElementById('finalScoreVal').textContent = currentQuizScore;
+      document.getElementById('finalDetailText').textContent = `Berhasil menjawab benar ${currentQuizScore / 10} dari 10 soal!`;
+
+      const emoji = document.getElementById('resultEmoji');
+      const title = document.getElementById('resultTitle');
+      const subtitle = document.getElementById('resultSubtitle');
+
+      if (currentQuizScore >= 80) {
+        emoji.textContent = '👑';
+        title.textContent = `Luar Biasa, ${currentStudentName}!`;
+        subtitle.textContent = 'Kamu adalah Bintang Matematika Sejati!';
+        // Selebrasi konfeti penuh
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.5 }
+        });
+      } else if (currentQuizScore >= 50) {
+        emoji.textContent = '🌟';
+        title.textContent = `Bagus Sekali, ${currentStudentName}!`;
+        subtitle.textContent = 'Terus berlatih ya, kamu sudah semakin pintar!';
+      } else {
+        emoji.textContent = '🌱';
+        title.textContent = `Tetap Semangat, ${currentStudentName}!`;
+        subtitle.textContent = 'Ayo belajar lagi dengan buah dan bintang!';
+      }
+
+      // Reset status pengiriman google sheets
+      document.getElementById('submissionStatus').classList.add('hidden');
+      document.getElementById('submitScoreBtnText').textContent = 'Kirim Nilai Sekarang';
+    }
+
+    /* ========================================================
+       7. INTEGRASI GOOGLE SHEETS / DOCS
+       ======================================================== */
+    function openSheetsModal() {
+      playClickSound();
+      const modal = document.getElementById('modalSheets');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        document.getElementById('modalSheetsCard').classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeSheetsModal() {
+      playClickSound();
+      const modal = document.getElementById('modalSheets');
+      modal.classList.add('opacity-0');
+      document.getElementById('modalSheetsCard').classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function saveSheetSettings() {
+      const val = document.getElementById('sheetWebhookInput').value.trim();
+      googleSheetWebhookUrl = val;
+      playClickSound();
+      closeSheetsModal();
+    }
+
+    function sendScoreToGoogle() {
+      playClickSound();
+      const statusEl = document.getElementById('submissionStatus');
+      const btnText = document.getElementById('submitScoreBtnText');
+      statusEl.classList.remove('hidden');
+
+      btnText.textContent = 'Mengirim data...';
+
+      const payload = {
+        timestamp: new Date().toLocaleString('id-ID'),
+        namaSiswa: currentStudentName,
+        skor: currentQuizScore,
+        materi: 'Penjumlahan 1-10 (Kelas 1 SD)',
+        detail: `Benar ${currentQuizScore / 10} dari 10 soal`
+      };
+
+      if (!googleSheetWebhookUrl) {
+        // Simulasi berhasil dengan penyiapan lokal
+        setTimeout(() => {
+          btnText.textContent = '✓ Tersimpan di Rekap';
+          statusEl.className = 'text-xs text-center font-bold text-emerald-700 mt-2';
+          statusEl.innerHTML = `✅ <strong>Berhasil dicatat!</strong> Nilai atas nama <u>${currentStudentName}</u> (${currentQuizScore}/100) siap direkap guru.`;
+        }, 800);
+      } else {
+        // Pengiriman nyata via POST ke Google Apps Script Web App
+        fetch(googleSheetWebhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(() => {
+          btnText.textContent = '✓ Terkirim ke Google Sheets';
+          statusEl.className = 'text-xs text-center font-bold text-emerald-700 mt-2';
+          statusEl.textContent = '✅ Nilai berhasil dikirim ke Google Spreadsheet Guru!';
+        })
+        .catch(err => {
+          btnText.textContent = 'Coba Kirim Lagi';
+          statusEl.className = 'text-xs text-center font-bold text-rose-600 mt-2';
+          statusEl.textContent = '⚠️ Gagal terhubung ke URL Sheets. Pastikan izin Webhook diset Anyone.';
+        });
+      }
+    }
+
+    /* ========================================================
+       8. MODAL DOKUMENTASI PROMPT MASTER & SALIN
+       ======================================================== */
+    function openPromptModal() {
+      playClickSound();
+      const modal = document.getElementById('modalPrompt');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        document.getElementById('modalPromptCard').classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closePromptModal() {
+      playClickSound();
+      const modal = document.getElementById('modalPrompt');
+      modal.classList.add('opacity-0');
+      document.getElementById('modalPromptCard').classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function copyMasterPrompt() {
+      playClickSound();
+      const textToCopy = document.getElementById('masterPromptText').innerText;
+      
+      // Menggunakan fallback aman execCommand untuk kompatibilitas iframe
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = textToCopy;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      try {
+        document.execCommand('copy');
+        const toast = document.getElementById('copyToast');
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+      } catch (err) {
+        console.error("Gagal menyalin", err);
+      }
+      document.body.removeChild(tempTextArea);
+    }
+  </script>
+</body>
+</html>
+    
